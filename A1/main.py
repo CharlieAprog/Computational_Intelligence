@@ -23,63 +23,59 @@ def generate_random_data(number_of_observations, dimension_size):
     return x, y
 
 def train(x, y, w, max_epochs):
+    success = 0
     for epoch in range(max_epochs):
         updated = False
         for example_index in range(len(x)):
             E_mu = np.dot(w, (x[example_index] * y[example_index]))
+            N = len(x[example_index])
             if E_mu <= 0:
                 updated = True
-                update = 1/len(x[example_index]) * x[example_index] * y[example_index]
+                update = 1/N * x[example_index] * y[example_index]
                 w += update
         if not updated:
+            success = 1
             break
-    return w
+    return w, success
 
-def count_ls(w, x, y, number_of_observations):
-    lin_sep_count = 0
-    for example in range(number_of_observations):
-        label = np.dot(w, (x[example] * y[example]))
-        if label > 0:
-            lin_sep_count += 1
-    return lin_sep_count
-
-
-def make_plot(x, y, save=False):
-    title = f'Capacity of Model'
+def make_plot(x, ys, save=False, title='Linear Separability of Datasets'):
     plt.figure()
     plt.title(title)
-    plt.ylim(0,1)
-    plt.set_xlabel('P/N (alpha)')
-    plt.set_ylabel('p(linearly seperable)')
-    plt.plot(x, y)
+    plt.ylim(-0.1,1.1)
+    plt.xlabel('P/N (alpha)')
+    plt.ylabel('p(linearly seperable)')
+    for i, y in ys.items():
+        plt.plot(x, y, label=f'N:{i}')
+    plt.legend()
     if save:
-        plt.savefig(f'plots', title)
+        plt.savefig(f'plots/{title}.jpg')
+
     plt.show()
-
-
 
 def main():
     alphas = []
-    fractions = []
-    for alpha in tqdm(np.arange(0.5, 5.1, 0.25), desc='running different alphas', leave=True):
-        # parameters
-        N = 100
-        P = int(alpha * N)
-        max_epochs = 100
-        w = np.zeros(N)
-        num_seperable = 0
-        total = 0
+    all_fractions = {}
+    dimension_sizes = [20, 40, 100]
+    alphas = np.arange(0.7, 3.01, 0.1)
+    max_epochs = 100
+    total_datasets = 50
+    for dimension_size in tqdm(dimension_sizes, desc='running different sizes of N', leave=True):
+        fractions = []
+        for alpha in tqdm(alphas, desc='running different alphas', leave=False):
+            input_size = int(alpha * dimension_size)
+            w = np.zeros(dimension_size)
+            num_seperable = 0
 
-        for n in tqdm(range(0, 50), desc='running values of N', leave=False):
-            data_x, data_y = generate_random_data(P, N)
-            w = train(data_x, data_y, w, max_epochs)
-            num_seperable += count_ls(w, data_x, data_y, P)
-            total += P
-        fraction_Q = (num_seperable / total)
-        alphas.append(alpha)
-        fractions.append(fraction_Q)
+            for n in tqdm(range(0, total_datasets), desc='training perceptron on different datasets', leave=False):
+                x_data, y_data = generate_random_data(input_size, dimension_size)
+                w, success = train(x_data, y_data, w, max_epochs)
+                num_seperable += success
 
-    # make_plot(alphas, fractions, save=True)
+            fraction_Q = (num_seperable / total_datasets)
+            fractions.append(fraction_Q)
+        all_fractions[dimension_size] = fractions
+
+    make_plot(alphas, all_fractions, save=True)
     # hyperplane = get_perpendicular_vector(w)
     # hyperplane = hyperplane * 2
     # print("weight vector", w, "hyperplane", hyperplane)
