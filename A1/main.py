@@ -55,7 +55,9 @@ def make_plot(x, ys, save=False, title='Linear Separability of Datasets'):
 def main():
     alphas = []
     all_fractions = {}
-    dimension_sizes = [20, 40, 100]
+    dimension_sizes = [20, 40, 100, 200]
+    dimension_sizes = [20]
+
     alphas = np.arange(0.7, 3.01, 0.1)
     max_epochs = 100
     total_datasets = 50
@@ -74,13 +76,13 @@ def main():
             fraction_Q = (num_seperable / total_datasets)
             fractions.append(fraction_Q)
         all_fractions[dimension_size] = fractions
-
-    make_plot(alphas, all_fractions, save=True)
+    print(all_fractions)
+    # make_plot(alphas, all_fractions, save=True)
     # hyperplane = get_perpendicular_vector(w)
     # hyperplane = hyperplane * 2
     # print("weight vector", w, "hyperplane", hyperplane)
     # # my ugly plotting
-    # plt.scatter(np.array(data_x)[:,0], np.array(data_x)[:,1], c=data_y)
+    # plt.scatter(np.array(x_data)[:,0], np.array(x_data)[:,1], c=y_data)
     # origin = [0, hyperplane[0]]
     # end = [0, hyperplane[1]]
     # origin1 = [0, w[0]]
