@@ -49,19 +49,21 @@ def make_plot(x, ys, save=False, title='Linear Separability of Datasets', label_
         plt.plot(x, y, label=f'{label_desc}{i}')
     plt.legend()
     if save:
-        plt.savefig(f'plots/{title}.jpg')
+        plt.savefig(f'plots/A1_plots/{title}.jpg')
 
     plt.show()
 
 def main():
     alphas = []
     all_fractions = {}
-    Ns = [200]
-    epoch_sizes = [50, 100]
+    epoch_sizes = [100]
+    # Ns = [5, 25, 50, 100, 200, 500]
+    Ns = [5,]
+
     alphas = np.arange(0.7, 3.01, 0.1)
     total_datasets = 50
-    for max_epochs in tqdm(epoch_sizes, desc='running different sizes of N', leave=True):
-        for N in tqdm(Ns, desc='running different sizes of N', leave=True):
+    for max_epochs in tqdm(epoch_sizes, desc='running different max epochs', leave=False):
+        for N in tqdm(Ns, desc='running different sizes of N', leave=False):
             fractions = []
             for alpha in tqdm(alphas, desc='running different alphas', leave=False):
                 input_size = int(alpha * N)
@@ -75,22 +77,10 @@ def main():
 
                 fraction_Q = (num_seperable / total_datasets)
                 fractions.append(fraction_Q)
-            all_fractions[max_epochs] = fractions
+            all_fractions[N] = fractions
     print(all_fractions)
-    make_plot(alphas, all_fractions, save=False, title='Higher Epoch Limits')
+    make_plot(alphas, all_fractions, save=False,)
 
-    # hyperplane = get_perpendicular_vector(w)
-    # hyperplane = hyperplane * 2
-    # print("weight vector", w, "hyperplane", hyperplane)
-    # # my ugly plotting
-    # plt.scatter(np.array(x_data)[:,0], np.array(x_data)[:,1], c=y_data)
-    # origin = [0, hyperplane[0]]
-    # end = [0, hyperplane[1]]
-    # origin1 = [0, w[0]]
-    # end1 = [0, w[1]]
-    # plt.plot(origin1, end1, color='green', label='weight vector')
-    # plt.plot(origin, end)
-    # plt.show()
 
 
 if __name__ =='__main__':
