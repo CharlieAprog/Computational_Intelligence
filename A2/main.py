@@ -23,7 +23,7 @@ def generate_random_data(P, N):
     sd = variance ** 0.5
     w_teacher = generate_teacher(N)
     x = np.random.normal(loc=mean, scale=sd, size=(P, N))
-    y = np.array([np.dot(element, w_teacher) for element in x])
+    y = np.array([np.sign(np.dot(element, w_teacher)) for element in x])
     return x, y, w_teacher
 
 def determine_stabilities(w, x, y):
@@ -83,7 +83,7 @@ def plot_stabilities(stabilities, title='Distribution of stabilities', save= Fal
     plt.xlabel('K, Distance from the hyperplane')
     plt.ylabel('Amount of data points')
     #plt.legend()
-    plt.hist(hist_arr, bins=30, range=(0, 20))
+    plt.hist(hist_arr, bins=30, range=(0, 5))
     if save:
         plt.savefig(f'plots/A2_plots/{title}.jpg')
     plt.show()
